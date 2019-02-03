@@ -66,13 +66,14 @@ def add_candidate(request):
     experience = min(6, (award_index - 8) // 3)
 
     data = {
-        'name': name,
-        'gender': gender,
-        'school': school,
-        'gpa': gpa,
-        'experience': experience
+        'Name': name,
+        'Gender': gender,
+        'School': school,
+        'GPA': gpa,
+        'Experience (yrs)': experience
     }
     print("data is {}".format(data))
+    # function call here to prediction with the data
     output_data = {
         'no_fair_acc': .4,
         'no_fair_bias': -.43,
