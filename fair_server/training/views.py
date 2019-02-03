@@ -102,6 +102,10 @@ def train(request):
                                                  unprivileged_groups=unprivileged_groups,
                                                  privileged_groups=privileged_groups)
 	orig_mean_difference = metric_orig_train.mean_difference()
+
+	with open('./training/orig_mean_difference.pkl', 'wb') as f:
+		pickle.dump(lmod_orig, f)
+
 	RW = Reweighing(unprivileged_groups=unprivileged_groups,
                     privileged_groups=privileged_groups)
 	dataset_transf_train = RW.fit_transform(dataset_orig_train)
@@ -109,6 +113,9 @@ def train(request):
                                                    unprivileged_groups=unprivileged_groups,
                                                    privileged_groups=privileged_groups)
 	transf_mean_difference = metric_transf_train.mean_difference()
+	
+	with open('./training/transf_mean_difference.pkl', 'wb') as f:
+		pickle.dump(lmod_transf, f)
 
 	# Logistic regression classifier and predictions
 	scale_orig = StandardScaler()
