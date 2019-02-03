@@ -27,7 +27,7 @@
 <script>
 import VuesticFileUploadList from './VuesticFileUploadList'
 import VuesticFileUploadContainer from './VuesticFileUploadContainer'
-
+import Axios from 'axios';
 export default {
   name: 'vuestic-file-upload',
   components: {
@@ -63,6 +63,20 @@ export default {
         files = this.validateFileTypes(files)
       }
       this.files = [...this.files, ...files]
+      this.files.forEach(file => {
+        const FileReader = new FileReader()
+        const binaryFile = FileReader.readAsBinaryString(file)
+        console.log(binaryFile)
+        Axios.post('18.219.78.218:8000/add_candidate', {
+          candidate_pdf: binaryFile
+        })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      })
     },
     removeFile (index) {
       this.files.splice(index, 1)
