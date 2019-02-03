@@ -74,13 +74,10 @@ def add_candidate(request):
         'GPA': gpa,
         'Experience (yrs)': experience
     }
-    print("data is {}".format(data))
     output_data = predict(data)
     return HttpResponse(json.dumps(output_data), content_type='application/json')
 
-def predict(request):
-    data = {'Gender': 'F', 'Name': 'Arisa Pono', 'School': 'MIT', 'Experience (yrs)': 4, 'GPA': 3.9}
-    
+def predict(data):
     with open("./training/model_orig.pkl", 'rb') as f:
         model_orig = pickle.load(f)
     with open("./training/scaler.pkl", 'rb') as f:
@@ -107,9 +104,7 @@ def predict(request):
         'fair_bias': metrics_transf['Average odds difference'],
         'fair_rec': fair_rec
     }
-    print(output_data)
-    #return output_data
-    return HttpResponse('Check console')
+    return output_data
 
 def data_to_vector(data):
     schools_list = ['Penn', 'Barnard', 'Wellesley', 'MIT', 'USC', 'Cornell']
