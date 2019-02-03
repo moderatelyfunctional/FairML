@@ -23,5 +23,6 @@ urlpatterns = [
     path('', training.views.play),
     # path('train/', training.views.train),
     # path('predict/', training.views.predict),
+    path('fetch_csv/', dashboard.views.fetch_csv),
     path('add_candidate/', training.views.add_candidate)
 ]
