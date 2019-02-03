@@ -1,3 +1,5 @@
+import PyPDF2
+
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -10,8 +12,13 @@ def play(request):
 
 @csrf_exempt
 def add_candidate(request):
-	print('Request.POST is {}'.format(request.POST))
-	print('Request.FILE is {}'.format(request))
+	for filename in request.FILES:
+		print("FILENAME {}".format(request.FILES[filename]))
+		name = request.FILES[filename].name
+		data = request.FILES[filename].read()
+		# print('data is {}'.format(data))
+		# print('filename {} name {}'.format(filename, name))
+	# print("Is there a candidate_pdf {}".format(candidate_pdf))
 	
 	return HttpResponse('Hey everything good')
 
