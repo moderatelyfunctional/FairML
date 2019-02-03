@@ -9,7 +9,7 @@ ipython-genutils==0.2.0
 jedi==0.12.1
 jupyter-client==5.2.3
 jupyter-core==4.4.0
-llvmlite==0.24.0+1.gee50a0f
+llvmlite==0.24.0
 mkl-fft==1.0.6
 mkl-random==1.0.1
 numba==0.39.0
