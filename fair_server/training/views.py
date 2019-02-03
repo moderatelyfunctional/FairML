@@ -81,7 +81,7 @@ def add_candidate(request):
 		'fair_bias': -.06,
 		'fair_rec': 'Accept'
 	}
-	return HttpResponse(json.dumps(output_data), type='application/json')
+	return HttpResponse(json.dumps(output_data), content_type='application/json')
 
 # Giant function based on model Python notebook
 def train(request):
