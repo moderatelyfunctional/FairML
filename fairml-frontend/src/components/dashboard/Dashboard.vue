@@ -21,6 +21,13 @@
         </div>
       </vuestic-tabs>
     </vuestic-widget>
+    <div class="flex md12">
+      <vuestic-widget :headerText="$t('fileUpload.uploadList')">
+        <vuestic-file-upload
+          v-model="list"
+        />
+      </vuestic-widget>
+    </div>
 
     <dashboard-bottom-widgets></dashboard-bottom-widgets>
 
@@ -46,7 +53,11 @@ export default {
     FeaturesTab,
     DashboardBottomWidgets,
   },
-
+  data () {
+    return {
+      list: [],
+    }
+  },
   methods: {
     launchEpicmaxToast () {
       this.showToast(`Let's work together!`, {
