@@ -85,7 +85,6 @@ def add_candidate(request):
 
 # Giant function based on model Python notebook
 def train(request):
-	data = request.POST.get('data')
 	df = pd.read_csv('./training/resume_data_5000.csv')
 	dataset_orig = StandardDataset(df,
 									label_name='Accepted',
@@ -170,6 +169,10 @@ def train(request):
 										unprivileged_groups, privileged_groups,
 										disp = False)
 
+		if thresh == best_class_thresh:
+			with open('./training/metrics_transf.pkl', 'wb') as f:
+				pickle.dump(metric_test_bef, f, protocol=pickle.HIGHEST_PROTOCOL)
+
 		bal_acc_arr_orig.append(metric_test_bef["Balanced accuracy"])
 		avg_odds_diff_arr_orig.append(metric_test_bef["Average odds difference"])
 		disp_imp_arr_orig.append(metric_test_bef["Disparate impact"])
@@ -201,6 +204,10 @@ def train(request):
 										unprivileged_groups, privileged_groups,
 										disp = False)
 
+		if thresh == best_class_thresh:
+			with open('./training/metrics_orig.pkl', 'wb') as f:
+				pickle.dump(metric_test_aft, f, protocol=pickle.HIGHEST_PROTOCOL)
+
 		bal_acc_arr_transf.append(metric_test_aft["Balanced accuracy"])
 		avg_odds_diff_arr_transf.append(metric_test_aft["Average odds difference"])
 		disp_imp_arr_transf.append(metric_test_aft["Disparate impact"])
@@ -209,10 +216,6 @@ def train(request):
 		pickle.dump(lmod_orig, f)
 	with open('./training/model_transf.pkl', 'wb') as f:
 		pickle.dump(lmod_transf, f)
-	with open('./training/metrics_orig.pkl', 'wb') as f:
-		pickle.dump(metric_test_aft, f, protocol=pickle.HIGHEST_PROTOCOL)
-	with open('./training/metrics_transf.pkl', 'wb') as f:
-		pickle.dump(metric_test_bef, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 	return HttpResponse('Model trained')
 
