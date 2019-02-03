@@ -75,15 +75,46 @@ def add_candidate(request):
         'experience': experience
     }
     print("data is {}".format(data))
-    output_data = {
-        'no_fair_acc': .4,
-        'no_fair_bias': -.43,
-        'no_fair_rec': 'Reject',
-        'fair_acc': .38,
-        'fair_bias': -.06,
-        'fair_rec': 'Accept'
-    }
+    output_data = predict(data)
     return HttpResponse(json.dumps(output_data), content_type='application/json')
+
+def predict(data):
+    df = pd.DataFrame.from_dict(data)
+    
+    with open("model_orig.pkl", 'rb') as f:
+        model_orig = pickle.load(f)
+    with open("scaler.pkl", 'rb') as f:
+        scaler = pickle.load(f)
+    with open("metrics_orig.pkl", 'rb') as f:
+        metrics_orig = pickle.load(f)
+    with open("model_transf.pkl", 'rb') as f:
+        model_transf = pickle.load(f)
+    with open("metrics_transf.pkl", 'rb') as f:
+        metrics_transf = pickle.load(f)
+
+    X = StandardDataset(df,
+                        label_name='Accepted',
+                        favorable_classes=[1],
+                        protected_attribute_names=['Gender'],
+                        privileged_classes=[[1]],
+                        categorical_features=['School'],
+                        features_to_drop=['Name'])
+    X_scaled = scaler.transform(X.features)
+    y_orig = model_orig.predict(X_scaled)
+    y_transf = model_transf.predict(X_scaled)
+
+    output_data = {
+        'no_fair_acc': metrics_orig['Accuracy (Overall)'],
+        'no_fair_bias': metrics_orig['Average odds difference'],
+        'no_fair_rec': 'Accept' if (y_orig == 1) else 'Reject',
+        'fair_acc': metrics_transf['Accuracy (Overall)'],
+        'fair_bias': metrics_transf['Average odds difference'],
+        'fair_rec': 'Accept' if (y_transf == 1) else 'Reject'
+    }
+
+    return output_data
+
+    
 
 # Giant function based on model Python notebook
 def train(request):
@@ -124,6 +155,9 @@ def train(request):
     X_train = scale_orig.fit_transform(dataset_orig_train.features)
     y_train = dataset_orig_train.labels.ravel()
     w_train = dataset_orig_train.instance_weights.ravel()
+
+    with open('./training/scaler.pkl', 'wb') as f:
+        pickle.dump(scale_orig, f)
 
     lmod_orig = LogisticRegression(solver='lbfgs')
     lmod_orig.fit(X_train, y_train,
