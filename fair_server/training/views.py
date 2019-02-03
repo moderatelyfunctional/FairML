@@ -1,4 +1,4 @@
-import PyPDF2
+import base64
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -12,16 +12,16 @@ def play(request):
 
 @csrf_exempt
 def add_candidate(request):
+	print("REQUEST POST {}".format(request.POST))
+	print("REQUEST FILE {}".format(request.FILES))
 	for filename in request.FILES:
 		print("FILENAME {}".format(request.FILES[filename]))
 		name = request.FILES[filename].name
 		data = request.FILES[filename].read()
+		
 		# print('data is {}'.format(data))
 		# print('filename {} name {}'.format(filename, name))
 	# print("Is there a candidate_pdf {}".format(candidate_pdf))
-	
-	candidate_pdf = request.FILES['candidate_pdf']
-	print('Candidate pdf is {}'.format(candidate_pdf))
 	
 	return HttpResponse('Hey everything good')
 
