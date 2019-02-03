@@ -159,13 +159,13 @@ def train(request):
 		avg_odds_diff_arr_transf.append(metric_test_aft["Average odds difference"])
 		disp_imp_arr_transf.append(metric_test_aft["Disparate impact"])
 
-	with open('./model_orig.pkl', 'wb') as f:
+	with open('./training/model_orig.pkl', 'wb') as f:
 		pickle.dump(lmod_orig, f)
-	with open('./model_transf.pkl', 'wb') as f:
+	with open('./training/model_transf.pkl', 'wb') as f:
 		pickle.dump(lmod_transf, f)
-	with open('./metrics_orig.pkl', 'wb') as f:
+	with open('./training/metrics_orig.pkl', 'wb') as f:
 		pickle.dump(metric_test_aft, f, protocol=pickle.HIGHEST_PROTOCOL)
-	with open('./metrics_transf.pkl', 'wb') as f:
+	with open('./training/metrics_transf.pkl', 'wb') as f:
 		pickle.dump(metric_test_bef, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 	return HttpResponse('Model trained')
