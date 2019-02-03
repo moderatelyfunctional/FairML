@@ -35,7 +35,9 @@ name_to_gender = {
 }
 @csrf_exempt
 def add_candidate(request):
-	curr_file = request.FILES['candidate_pdf']
+	print('candidate files {}'.format(request.FILES))
+	# curr_file = request.FILES['candidate_pdf']
+	curr_file = request.FILES['image']
 
 	output_pdf = '{}'.format(curr_file.name)
 	with default_storage.open(output_pdf, 'wb+') as dest:
@@ -89,8 +91,7 @@ def train(request):
 									label_name='Accepted',
 									favorable_classes=[1],
 									protected_attribute_names=['Gender'],
-									privileged_classes=[[1]],
-									categorical_features=['School'],
+									privileged_classes=[[1]], categorical_features=['School'],
 									features_to_drop=['Name'])
 	dataset_orig_train, dataset_orig_vt = dataset_orig.split([0.7], shuffle=True)
 	dataset_orig_valid, dataset_orig_test = dataset_orig_vt.split([0.5], shuffle=True)
