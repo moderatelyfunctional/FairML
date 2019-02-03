@@ -3,6 +3,69 @@
 		<title>Hello</title>
 	</head>
 	<body>
-		Nothing to see here
+
+        <div id="container" style="margin-top:50px;">
+            <div class="col-sm-offset-2 col-sm-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Ajax upload example</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form method="post" enctype="multipart/form-data"  action="add_candidate/">
+                            <input type="file" name="candidate_pdf" id="input_files"/>
+                            <button type="submit" id="btn_submit" class="form-control">Upload Files!</button>
+	                		{% csrf_token %}
+                        </form>
+                        <br />
+                        <div id="loading_spinner"><i class="fa fa-spinner fa-pulse"></i> Uploading</div>
+                        <div id="result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script>
+			function getCookie(name) {
+				let cookieValue = null;
+				if (document.cookie && document.cookie != '') {
+					let cookies = document.cookie.split(';');
+					for (let i = 0; i < cookies.length; i++) {
+						let cookie = jQuery.trim(cookies[i]);
+						// Does this cookie string begin with the name we want?
+						if (cookie.substring(0, name.length + 1) == (name + '=')) {
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			}
+			let csrftoken = getCookie('csrftoken');
+			function csrfSafeMethod(method) {
+				// these HTTP methods do not require CSRF protection
+				return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+			}
+
+			$.ajaxSetup({
+				beforeSend: function(xhr, settings) {
+					if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+						xhr.setRequestHeader('X-CSRFToken', csrftoken);
+					}
+				}
+			});
+
+			$.ajax({
+				url: 'add_candidate/',
+				type: 'post',
+				data: {'candidate_pdf': 'put pdf here'},
+				success: function(data) {
+					console.log('back from the server');
+				},
+				error: function(err) {
+					console.log('never heard back');
+				}
+			})
+		</script>
 	</body>
 </html>
