@@ -34,7 +34,9 @@ name_to_gender = {
 }
 @csrf_exempt
 def add_candidate(request):
-	curr_file = request.FILES['candidate_pdf']
+	print('candidate files {}'.format(request.FILES))
+	# curr_file = request.FILES['candidate_pdf']
+	curr_file = request.FILES['image']
 
 	output_pdf = '{}'.format(curr_file.name)
 	with default_storage.open(output_pdf, 'wb+') as dest:
