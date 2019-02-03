@@ -112,7 +112,6 @@ def train(request):
     metric_transf_train = BinaryLabelDatasetMetric(dataset_transf_train,
                                                    unprivileged_groups=unprivileged_groups,
                                                    privileged_groups=privileged_groups)
-<<<<<<< HEAD
     transf_mean_difference = metric_transf_train.mean_difference()
 
     with open('./training/transf_mean_difference.pkl', 'wb') as f:
