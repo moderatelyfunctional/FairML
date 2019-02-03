@@ -104,7 +104,7 @@ def train(request):
 	orig_mean_difference = metric_orig_train.mean_difference()
 
 	with open('./training/orig_mean_difference.pkl', 'wb') as f:
-		pickle.dump(lmod_orig, f)
+		pickle.dump(orig_mean_difference, f)
 
 	RW = Reweighing(unprivileged_groups=unprivileged_groups,
                     privileged_groups=privileged_groups)
@@ -115,7 +115,7 @@ def train(request):
 	transf_mean_difference = metric_transf_train.mean_difference()
 	
 	with open('./training/transf_mean_difference.pkl', 'wb') as f:
-		pickle.dump(lmod_transf, f)
+		pickle.dump(transf_mean_difference, f)
 
 	# Logistic regression classifier and predictions
 	scale_orig = StandardScaler()
