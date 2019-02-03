@@ -34,7 +34,7 @@
               <div class="stats-number">
                 425
               </div>
-              <div class="stats-title">Commits</div>
+              <div class="stats-title">Potential Matches</div>
             </div>
             <div class="chart-container">
               <vuestic-progress-bar type="circle" :value="70" theme="White"

@@ -42,12 +42,12 @@
     "dataVisualization": "Data Visualization",
     "success": "SUCCESS",
     "successMessage": "You successfully read this important alert message.",
-    "elements": "Elements",
+    "elements": "Suitable Candidates",
     "features": "Features",
     "setupProfile": "Setup Profile",
     "teamMembers": "Team Members",
     "usersAndMembers": "Users & Members",
-    "versions": "Versions"
+    "versions": "Unsuitable Candidates"
   },
   "notificationsPage": {
     "alerts": {
