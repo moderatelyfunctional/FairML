@@ -78,7 +78,8 @@ def add_candidate(request):
         'data': data,
         'prediction': prediction
     }
-    print(output_data)
+    del data['Experience (yrs)']
+    data['Ex'] = experience
     return HttpResponse(json.dumps(output_data), content_type='application/json')
 
 def predict(data):
