@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import pickle
 import pandas as pd
+import numpy as np
 from collections import OrderedDict
 from tqdm import tqdm
 from IPython.display import Markdown, display
@@ -38,7 +39,7 @@ def add_candidate(request):
 # Giant function based on model Python notebook
 def train(request):
 	data = request.POST.get('data')
-	df = pd.read_csv('./resume_data_5000.csv')
+	df = pd.read_csv('./training/resume_data_5000.csv')
 	dataset_orig = StandardDataset(df,
 									label_name='Accepted',
 									favorable_classes=[1],
@@ -152,20 +153,22 @@ def train(request):
 		
 		metric_test_aft = compute_metrics(dataset_orig_test, dataset_transf_test_pred, 
 										unprivileged_groups, privileged_groups,
-										disp = disp)
+										disp = False)
 
 		bal_acc_arr_transf.append(metric_test_aft["Balanced accuracy"])
 		avg_odds_diff_arr_transf.append(metric_test_aft["Average odds difference"])
 		disp_imp_arr_transf.append(metric_test_aft["Disparate impact"])
 
-	with open('./model_orig.pkl', 'w') as f:
-		pickle.dumps(lmod_orig, f)
-	with open('./model_transf.pkl', 'w') as f:
-		pickle.dumps(lmod_transf, f)
-	with open('./metrics_orig.pkl', 'w') as f:
-		pickle.dumps(metric_test_aft, f, protocol=pickle.HIGHEST_PROTOCOL)
-	with open('./metrics_transf.pkl', 'w') as f:
-		pickle.dumps(metric_test_bef, f, protocol=pickle.HIGHEST_PROTOCOL)
+	with open('./model_orig.pkl', 'wb') as f:
+		pickle.dump(lmod_orig, f)
+	with open('./model_transf.pkl', 'wb') as f:
+		pickle.dump(lmod_transf, f)
+	with open('./metrics_orig.pkl', 'wb') as f:
+		pickle.dump(metric_test_aft, f, protocol=pickle.HIGHEST_PROTOCOL)
+	with open('./metrics_transf.pkl', 'wb') as f:
+		pickle.dump(metric_test_bef, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+	return HttpResponse('Model trained')
 
 def compute_metrics(dataset_true, dataset_pred, 
                     unprivileged_groups, privileged_groups,
