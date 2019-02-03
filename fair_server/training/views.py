@@ -1,5 +1,5 @@
 import os
-import base64
+import json
 
 import PyPDF2
 
@@ -71,7 +71,15 @@ def add_candidate(request):
 		'experience': experience
 	}
 	print("data is {}".format(data))
-	return HttpResponse('Hey everything good')
+	output_data = {
+		'no_fair_acc': .4,
+		'no_fair_bias': -.43,
+		'no_fair_rec': 'Reject',
+		'fair_acc': .38,
+		'fair_bias': -.06,
+		'fair_rec': 'Accept'
+	}
+	return HttpResponse(json.dumps(output_data), type='application/json')
 
 # Giant function based on model Python notebook
 def train(request):
