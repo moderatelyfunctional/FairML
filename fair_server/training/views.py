@@ -13,6 +13,9 @@ def add_candidate(request):
 	print('Request.POST is {}'.format(request.POST))
 	print('Request.FILE is {}'.format(request))
 	
+	candidate_pdf = request.FILES['candidate_pdf']
+	print('Candidate pdf is {}'.format(candidate_pdf))
+	
 	return HttpResponse('Hey everything good')
 
 def train(request):
