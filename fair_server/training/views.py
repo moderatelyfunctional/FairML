@@ -23,6 +23,8 @@ from aif360.metrics import ClassificationMetric
 from aif360.algorithms.preprocessing import Reweighing
 from aif360.metrics import ClassificationMetric
 
+np.random.seed(0)
+
 # Create your views here.
 def play(request):
     empty_context = dict()
@@ -99,7 +101,7 @@ def train(request):
     privileged_groups = [{'Gender': 1}]
     unprivileged_groups = [{'Gender': 0}]
 
-    metric_orig_train = BinaryLabelDatasetMetric(dataset_orig_train, 
+    metric_orig_train = BinaryLabelDatasetMetric(dataset_orig_train,
                                                  unprivileged_groups=unprivileged_groups,
                                                  privileged_groups=privileged_groups)
     orig_mean_difference = metric_orig_train.mean_difference()
@@ -110,11 +112,11 @@ def train(request):
     RW = Reweighing(unprivileged_groups=unprivileged_groups,
                     privileged_groups=privileged_groups)
     dataset_transf_train = RW.fit_transform(dataset_orig_train)
-    metric_transf_train = BinaryLabelDatasetMetric(dataset_transf_train, 
+    metric_transf_train = BinaryLabelDatasetMetric(dataset_transf_train,
                                                    unprivileged_groups=unprivileged_groups,
                                                    privileged_groups=privileged_groups)
     transf_mean_difference = metric_transf_train.mean_difference()
-    
+
     with open('./training/transf_mean_difference.pkl', 'wb') as f:
         pickle.dump(transf_mean_difference, f)
 
@@ -124,8 +126,8 @@ def train(request):
     y_train = dataset_orig_train.labels.ravel()
     w_train = dataset_orig_train.instance_weights.ravel()
 
-    lmod_orig = LogisticRegression()
-    lmod_orig.fit(X_train, y_train, 
+    lmod_orig = LogisticRegression(solver='lbfgs')
+    lmod_orig.fit(X_train, y_train,
             sample_weight=dataset_orig_train.instance_weights)
     y_train_pred = lmod_orig.predict(X_train)
 
@@ -148,16 +150,16 @@ def train(request):
     ba_arr = np.zeros(num_thresh)
     class_thresh_arr = np.linspace(0.01, 0.99, num_thresh)
     for idx, class_thresh in enumerate(class_thresh_arr):
-        
+
         fav_inds = dataset_orig_valid_pred.scores > class_thresh
         dataset_orig_valid_pred.labels[fav_inds] = dataset_orig_valid_pred.favorable_label
         dataset_orig_valid_pred.labels[~fav_inds] = dataset_orig_valid_pred.unfavorable_label
-        
+
         classified_metric_orig_valid = ClassificationMetric(dataset_orig_valid,
-                                                dataset_orig_valid_pred, 
+                                                dataset_orig_valid_pred,
                                                 unprivileged_groups=unprivileged_groups,
                                                 privileged_groups=privileged_groups)
-        
+
         ba_arr[idx] = 0.5*(classified_metric_orig_valid.true_positive_rate()\
                         +classified_metric_orig_valid.true_negative_rate())
 
@@ -172,13 +174,13 @@ def train(request):
         fav_inds = dataset_orig_test_pred.scores > thresh
         dataset_orig_test_pred.labels[fav_inds] = dataset_orig_test_pred.favorable_label
         dataset_orig_test_pred.labels[~fav_inds] = dataset_orig_test_pred.unfavorable_label
-        
-        metric_test_bef = compute_metrics(dataset_orig_test, dataset_orig_test_pred, 
+
+        metric_test_bef = compute_metrics(dataset_orig_test, dataset_orig_test_pred,
                                         unprivileged_groups, privileged_groups,
                                         disp = False)
 
         if thresh == best_class_thresh:
-            with open('./training/metrics_transf.pkl', 'wb') as f:
+            with open('./training/metrics_orig.pkl', 'wb') as f:
                 pickle.dump(metric_test_bef, f, protocol=pickle.HIGHEST_PROTOCOL)
 
         bal_acc_arr_orig.append(metric_test_bef["Balanced accuracy"])
@@ -189,7 +191,7 @@ def train(request):
     X_train = scale_transf.fit_transform(dataset_transf_train.features)
     y_train = dataset_transf_train.labels.ravel()
 
-    lmod_transf = LogisticRegression()
+    lmod_transf = LogisticRegression(solver='lbfgs')
     lmod_transf.fit(X_train, y_train,
             sample_weight=dataset_transf_train.instance_weights)
     y_train_pred = lmod_transf.predict(X_train)
@@ -207,13 +209,13 @@ def train(request):
         fav_inds = dataset_transf_test_pred.scores > thresh
         dataset_transf_test_pred.labels[fav_inds] = dataset_transf_test_pred.favorable_label
         dataset_transf_test_pred.labels[~fav_inds] = dataset_transf_test_pred.unfavorable_label
-        
-        metric_test_aft = compute_metrics(dataset_orig_test, dataset_transf_test_pred, 
+
+        metric_test_aft = compute_metrics(dataset_orig_test, dataset_transf_test_pred,
                                         unprivileged_groups, privileged_groups,
                                         disp = False)
 
         if thresh == best_class_thresh:
-            with open('./training/metrics_orig.pkl', 'wb') as f:
+            with open('./training/metrics_transf.pkl', 'wb') as f:
                 pickle.dump(metric_test_aft, f, protocol=pickle.HIGHEST_PROTOCOL)
 
         bal_acc_arr_transf.append(metric_test_aft["Balanced accuracy"])
@@ -227,12 +229,13 @@ def train(request):
 
     return HttpResponse('Model trained')
 
-def compute_metrics(dataset_true, dataset_pred, 
+
+def compute_metrics(dataset_true, dataset_pred,
                     unprivileged_groups, privileged_groups,
                     disp = True):
     """ Compute the key metrics """
     classified_metric_pred = ClassificationMetric(dataset_true,
-                                                 dataset_pred, 
+                                                 dataset_pred,
                                                  unprivileged_groups=unprivileged_groups,
                                                  privileged_groups=privileged_groups)
     metrics = OrderedDict()
@@ -246,9 +249,9 @@ def compute_metrics(dataset_true, dataset_pred,
     metrics["Average odds difference"] = classified_metric_pred.average_odds_difference()
     metrics["Equal opportunity difference"] = classified_metric_pred.equal_opportunity_difference()
     metrics["Theil index"] = classified_metric_pred.theil_index()
-    
+
     if disp:
         for k in metrics:
             print("%s = %.4f" % (k, metrics[k]))
-    
+
     return metrics
