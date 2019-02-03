@@ -38,6 +38,14 @@ name_to_gender = {
 @csrf_exempt
 def add_candidate(request):
     # curr_file = request.FILES['candidate_pdf']
+    n_resume = 0
+    with open('dashboard/n_resumes.txt', 'r') as file:
+        for line in file.readlines():
+            n_resume = int(line)
+
+    with open('dashboard/n_resumes.txt', 'w') as file:
+        file.write(n_resume + 1)
+
     curr_file = request.FILES['image']
 
     output_pdf = '{}'.format(curr_file.name)
