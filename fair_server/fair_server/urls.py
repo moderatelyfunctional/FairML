@@ -21,5 +21,5 @@ import training.views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', training.views.play),
-    path('/add_candidate/', training.views.add_candidate)
+    path('add_candidate/', training.views.add_candidate)
 ]
