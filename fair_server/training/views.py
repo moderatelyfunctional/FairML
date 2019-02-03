@@ -37,7 +37,6 @@ name_to_gender = {
 }
 @csrf_exempt
 def add_candidate(request):
-    print('candidate files {}'.format(request.FILES))
     # curr_file = request.FILES['candidate_pdf']
     curr_file = request.FILES['image']
 
@@ -74,7 +73,12 @@ def add_candidate(request):
         'GPA': gpa,
         'Experience (yrs)': experience
     }
-    output_data = predict(data)
+    prediction = predict(data)
+    output_data = {
+        'data': data,
+        'prediction': prediction
+    }
+    print(output_data)
     return HttpResponse(json.dumps(output_data), content_type='application/json')
 
 def predict(data):
