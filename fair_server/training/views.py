@@ -30,7 +30,7 @@ def play(request):
 
 name_to_gender = {
 	'Arisa Pono': 'F',
-	'Efraim Helman': 'M',
+	'Olivia Dzumade': 'F',
 	'Joseph Adams': 'M'
 }
 @csrf_exempt
