@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import base64
-=======
 import os
-import base64
 
 import PyPDF2
->>>>>>> 33a65e4b9b4f8a53c9ae46ed87a9d2e75c69c750
 
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
