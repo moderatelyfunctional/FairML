@@ -68,57 +68,68 @@ def add_candidate(request):
     experience = min(6, (award_index - 8) // 3)
 
     data = {
-        'name': name,
-        'gender': gender,
-        'school': school,
-        'gpa': gpa,
-        'experience': experience
+        'Name': name,
+        'Gender': gender,
+        'School': school,
+        'GPA': gpa,
+        'Experience (yrs)': experience
     }
     print("data is {}".format(data))
     output_data = predict(data)
     return HttpResponse(json.dumps(output_data), content_type='application/json')
 
-def predict(data):
-    df = pd.DataFrame.from_dict(data)
+def predict(request):
+    data = {'Gender': 'F', 'Name': 'Arisa Pono', 'School': 'MIT', 'Experience (yrs)': 4, 'GPA': 3.9}
     
-    with open("model_orig.pkl", 'rb') as f:
+    with open("./training/model_orig.pkl", 'rb') as f:
         model_orig = pickle.load(f)
-    with open("scaler.pkl", 'rb') as f:
+    with open("./training/scaler.pkl", 'rb') as f:
         scaler = pickle.load(f)
-    with open("metrics_orig.pkl", 'rb') as f:
+    with open("./training/metrics_orig.pkl", 'rb') as f:
         metrics_orig = pickle.load(f)
-    with open("model_transf.pkl", 'rb') as f:
+    with open("./training/model_transf.pkl", 'rb') as f:
         model_transf = pickle.load(f)
-    with open("metrics_transf.pkl", 'rb') as f:
+    with open("./training/metrics_transf.pkl", 'rb') as f:
         metrics_transf = pickle.load(f)
 
-    X = StandardDataset(df,
-                        label_name='Accepted',
-                        favorable_classes=[1],
-                        protected_attribute_names=['Gender'],
-                        privileged_classes=[[1]],
-                        categorical_features=['School'],
-                        features_to_drop=['Name'])
-    X_scaled = scaler.transform(X.features)
+    X = np.array(data_to_vector(data))
+    X_scaled = scaler.transform(X.reshape(1,-1))
     y_orig = model_orig.predict(X_scaled)
+    no_fair_rec = 'Accept' if (y_orig == 1) else 'Reject'
     y_transf = model_transf.predict(X_scaled)
+    fair_rec = 'Accept' if (y_transf == 1) else 'Reject'
 
     output_data = {
         'no_fair_acc': metrics_orig['Accuracy (Overall)'],
         'no_fair_bias': metrics_orig['Average odds difference'],
-        'no_fair_rec': 'Accept' if (y_orig == 1) else 'Reject',
+        'no_fair_rec': no_fair_rec,
         'fair_acc': metrics_transf['Accuracy (Overall)'],
         'fair_bias': metrics_transf['Average odds difference'],
-        'fair_rec': 'Accept' if (y_transf == 1) else 'Reject'
+        'fair_rec': fair_rec
     }
+    print(output_data)
+    #return output_data
+    return HttpResponse('Check console')
 
-    return output_data
+def data_to_vector(data):
+    schools_list = ['Penn', 'Barnard', 'Wellesley', 'MIT', 'USC', 'Cornell']
 
+    vector = [0] * 3
+    vector[0] = data['GPA']
+    vector[1] = 1 if data['Gender'] == 'M' else 0
+    vector[2] = data['Experience (yrs)']
     
+    idx = schools_list.index(data['School'])
+    se = [0] * 6
+    se[idx] = 1
+
+    vector = vector + se
+    return vector
 
 # Giant function based on model Python notebook
 def train(request):
     df = pd.read_csv('./training/resume_data_5000.csv')
+    df = df.drop(df.columns[0], axis=1)
     dataset_orig = StandardDataset(df,
                                     label_name='Accepted',
                                     favorable_classes=[1],
