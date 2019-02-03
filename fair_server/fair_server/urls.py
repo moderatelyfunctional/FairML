@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-import dashboard.views
+import training.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', dashboard.views.index)
+    path('', training.views.play),
+    path('add_candidate', training.views.add_candidate)
 ]

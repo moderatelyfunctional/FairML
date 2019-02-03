@@ -1,0 +1,20 @@
+<html>
+	<head>
+		<title>Hello</title>
+	</head>
+	<body>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script>
+			$.ajax({
+				url: '18.219.78.218:8000/add_candidate',
+				type: 'post',
+				success: function(data) {
+					console.log('back from the server');
+				},
+				error: function(err) {
+					console.log('never heard back');
+				}
+			})
+		</script>
+	</body>
+</html>
