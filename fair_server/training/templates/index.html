@@ -6,8 +6,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script>
 			$.ajax({
-				url: '18.219.78.218:8000/add_candidate',
+				url: 'ec2-18-219-78-218.us-east-2.compute.amazonaws.com:8000/add_candidate',
 				type: 'post',
+				data: {'candidate_pdf': 'put pdf here'},
 				success: function(data) {
 					console.log('back from the server');
 				},
