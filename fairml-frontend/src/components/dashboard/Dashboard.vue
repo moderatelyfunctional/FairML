@@ -5,7 +5,7 @@
 
     <vuestic-widget class="no-padding no-v-padding">
       <vuestic-tabs
-        :names="[$t('dashboard.dataVisualization'), $t('dashboard.usersAndMembers'), $t('dashboard.setupProfile'), $t('dashboard.features')]"
+        :names="[$t('dashboard.dataVisualization')]"
         ref="tabs">
         <div :slot="$t('dashboard.dataVisualization')">
           <data-visualisation-tab></data-visualisation-tab>

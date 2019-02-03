@@ -39,7 +39,7 @@
     "buttons": "Buttons"
   },
   "dashboard": {
-    "dataVisualization": "Data Visualization",
+    "dataVisualization": "Candidate Breakdown",
     "success": "SUCCESS",
     "successMessage": "You successfully read this important alert message.",
     "elements": "Suitable Candidates",
